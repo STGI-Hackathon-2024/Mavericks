@@ -1,3 +1,7 @@
 KYCPlatform_solution/dataset
 KYCPlatform_solution/dt
-.venv
+venv
+KYCPlatform_solution/dt2
+dt.zip
+dt2.zip
+KYCPlatform_solution/similarity_search.py
