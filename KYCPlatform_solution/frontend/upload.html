@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Documents</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: url('img.webp') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #0077cc;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #0077cc;
+            color: white;
+            padding: 12px 20px;
+            margin: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #005fa3;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #fileLabel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #0077cc;
+        }
+        .text-background {
+        background-color: rgba(255, 255, 255,0.8); /* White background with slight transparency */
+        padding: 10px 20px; /* Adds space around the text */
+        border-radius: 5px;  /* Rounds the corners of the background */
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+        text-align: center;
+        display: inline-block; /* Ensures the background wraps tightly around the text */
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-background">Upload Your Documents</h1>
+
+    <div id="fileLabel">
+        <label for="idImage">Upload ID Image:</label>
+        <button onclick="document.getElementById('idImage').click()">Choose ID Image</button>
+        <input type="file" id="idImage" accept="image/*" style="display: none;">
+    </div>
+
+    <div id="fileLabel">
+        <label for="userImage">Upload User Image:</label>
+        <button onclick="document.getElementById('userImage').click()">Choose User Image</button>
+        <input type="file" id="userImage" accept="image/*" style="display: none;">
+    </div>
+
+    <button id="submit">Submit</button>
+
+    <div id="response"></div>
+
+    <script>
+        const idImageInput = document.getElementById('idImage');
+        const userImageInput = document.getElementById('userImage');
+        const submitButton = document.getElementById('submit');
+        const responseDiv = document.getElementById('response');
+
+        idImageInput.addEventListener('change', () => {
+            const idImageFile = idImageInput.files[0];
+            if (idImageFile) {
+                alert(ID Image: ${idImageFile.name} selected);
+            }
+        });
+
+        userImageInput.addEventListener('change', () => {
+            const userImageFile = userImageInput.files[0];
+            if (userImageFile) {
+                alert(User Image: ${userImageFile.name} selected);
+            }
+        });
+
+        submitButton.addEventListener('click', () => {
+            const idImageFile = idImageInput.files[0];
+            const userImageFile = userImageInput.files[0];
+
+            if (!idImageFile || !userImageFile) {
+                alert("Please upload both images before submitting.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('id_image', idImageFile);
+            formData.append('user_image', userImageFile);
+
+            fetch('/upload_documents', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                responseDiv.innerText = Response from server: ${data.message};
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                responseDiv.innerText = 'Error uploading files!';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -187,13 +187,13 @@ def verify_identity():
 
 
 # Path to the FAISS index file
-FAISS_INDEX_PATH = 'image_embeddings.index'
-
+FAISS_INDEX_PATH = 'KYCPlatform_solution/image_embeddings.index'
+print(os.path.exists(FAISS_INDEX_PATH)) 
 # Load the FAISS index
 index = faiss.read_index(FAISS_INDEX_PATH)
 
 # Path to dataset images (the same images used to create the FAISS index)
-dataset_folder = 'dt'
+dataset_folder = 'KYCPlatform_solution/dt'
 image_paths = [os.path.join(dataset_folder, f) for f in os.listdir(dataset_folder) if f.endswith(('.jpg', '.png', '.jpeg'))]
 
 # Function to extract embedding for a query image using DeepFace

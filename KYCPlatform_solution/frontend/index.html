@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Verification</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #4b79a1, #283e51);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: #fff;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ffcc00;
+        }
+        video {
+            border-radius: 15px;
+            border: 4px solid #fff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            height: auto;
+        }
+        img {
+            margin-top: 20px;
+            border: 2px solid #fff;
+            width: 350px;
+            height: auto;
+            border-radius: 15px;
+            display: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        canvas {
+            display: none;
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        button {
+            background: #ffcc00;
+            border: none;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease-in-out;
+            margin: 10px;
+        }
+        button:hover {
+            background: #ff9900;
+            transform: translateY(-5px);
+        }
+        button:focus {
+            outline: none;
+        }
+        footer {
+            position: fixed;
+            bottom: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>KYC Verification</h1>
+    <video id="video" autoplay></video>
+    
+    <div class="button-group">
+        <button id="capture">Capture Image</button>
+        <button id="send">Send Image</button>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    <img id="capturedImage" alt="Captured Image will appear here" />
+
+    <!-- This will show status messages -->
+    <p id="statusMessage"></p>
+
+    <footer>
+        <p>&copy; 2024 Hackathon Project</p>
+    </footer>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const captureButton = document.getElementById('capture');
+        const sendButton = document.getElementById('send');
+        const capturedImage = document.getElementById('capturedImage');
+        const statusMessage = document.getElementById('statusMessage'); // Status message element
+
+        // Access the device camera and stream to video element
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                console.error("Error accessing the camera: " + err);
+            });
+
+        // Capture the image from the video stream
+        captureButton.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+
+            // Convert the canvas image to a data URL and display it in the <img> tag
+            const dataUrl = canvas.toDataURL('image/png');
+            capturedImage.src = dataUrl; 
+            capturedImage.style.display = "block"; // Show the captured image
+            alert("Image captured! You can review it before sending.");
+        });
+
+        // Send the image to the backend and show feedback
+        sendButton.addEventListener('click', () => {
+            statusMessage.textContent = "Sending image...";
+            statusMessage.style.color = "#fff";
+
+            canvas.toBlob((blob) => {
+                const formData = new FormData();
+                formData.append('image', blob, 'image.png');
+
+                fetch('http://127.0.0.1:5000/upload', {
+                    method: 'POST',
+                    body: formData,
+                })
+                alert("Image sent");
+                window.location.href = "upload.html";
+
+            });
+        });
+
+    </script>
+</body>
+</html>
